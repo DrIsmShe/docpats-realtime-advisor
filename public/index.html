@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DOCPATS · realtime advisor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-0: #0a0d12;
+        --bg-1: #11161e;
+        --bg-2: #161c25;
+        --bg-3: #1c2530;
+        --border: #1e2733;
+        --border-soft: #1a222d;
+        --text: #d8e0e8;
+        --text-bright: #ffffff;
+        --muted: #6c7a8a;
+        --green: #4ade80;
+        --green-dim: #1f3a2a;
+        --red: #f87171;
+        --red-dim: #3a1f24;
+        --amber: #fbbf24;
+        --blue: #60a5fa;
+        --cyan: #22d3ee;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        background: var(--bg-0);
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.55;
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 20% 0%,
+            rgba(34, 211, 238, 0.04),
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 100%,
+            rgba(167, 139, 250, 0.03),
+            transparent 50%
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .header {
+        position: relative;
+        border-bottom: 1px solid var(--border);
+        padding: 16px 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+        z-index: 1;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .header h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 19px;
+        letter-spacing: -0.5px;
+      }
+      .header h1 .accent {
+        color: var(--cyan);
+      }
+      .header h1 .subtitle {
+        color: var(--muted);
+        font-weight: 500;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-left: 12px;
+      }
+
+      .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 10px;
+        border-radius: 3px;
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        letter-spacing: 0.5px;
+        color: var(--green);
+      }
+      .status-pill .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 6px var(--green);
+        animation: pulse 2s infinite;
+      }
+      .status-pill.warn {
+        color: var(--amber);
+        border-color: rgba(251, 191, 36, 0.35);
+      }
+      .status-pill.warn .dot {
+        background: var(--amber);
+        box-shadow: 0 0 6px var(--amber);
+      }
+      .status-pill.error {
+        color: var(--red);
+        border-color: rgba(248, 113, 113, 0.35);
+      }
+      .status-pill.error .dot {
+        background: var(--red);
+        box-shadow: 0 0 6px var(--red);
+        animation: none;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        z-index: 1;
+      }
+
+      .card {
+        background: var(--bg-1);
+        padding: 22px 26px;
+        transition: background 0.2s;
+      }
+      .card:hover {
+        background: var(--bg-2);
+      }
+
+      .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .card-head .symbol {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--text-bright);
+      }
+      .card-head .meta {
+        font-size: 10px;
+        letter-spacing: 1px;
+        color: var(--muted);
+        text-transform: uppercase;
+      }
+
+      .price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        margin-bottom: 6px;
+      }
+      .price {
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        color: var(--text-bright);
+        font-variant-numeric: tabular-nums;
+        padding: 0 4px;
+        border-radius: 3px;
+        transition:
+          color 0.4s,
+          background 0.6s;
+      }
+      .price.flash-up {
+        color: var(--green);
+        background: rgba(74, 222, 128, 0.18);
+      }
+      .price.flash-down {
+        color: var(--red);
+        background: rgba(248, 113, 113, 0.18);
+      }
+      .change {
+        font-size: 14px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-variant-numeric: tabular-nums;
+      }
+      .change.pos {
+        color: var(--green);
+        background: var(--green-dim);
+      }
+      .change.neg {
+        color: var(--red);
+        background: var(--red-dim);
+      }
+
+      .tick-line {
+        font-size: 10px;
+        letter-spacing: 1px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        height: 14px;
+      }
+      .tick-line.warn {
+        color: var(--amber);
+      }
+      .tick-line.dead {
+        color: var(--red);
+        font-weight: 600;
+      }
+
+      .tf-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin: 4px 0 18px;
+      }
+      .tf {
+        background: var(--bg-2);
+        padding: 8px 6px;
+        border-radius: 3px;
+        text-align: center;
+        border-left: 2px solid var(--muted);
+      }
+      .tf .label {
+        color: var(--muted);
+        display: block;
+        margin-bottom: 4px;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .tf .arrow {
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .tf.bullish {
+        border-left-color: var(--green);
+      }
+      .tf.bullish .arrow {
+        color: var(--green);
+      }
+      .tf.bearish {
+        border-left-color: var(--red);
+      }
+      .tf.bearish .arrow {
+        color: var(--red);
+      }
+      .tf.mixed {
+        border-left-color: var(--amber);
+      }
+      .tf.mixed .arrow {
+        color: var(--amber);
+      }
+      .tf.neutral .arrow {
+        color: var(--muted);
+      }
+
+      .data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 24px;
+      }
+      .data-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        border-bottom: 1px dashed var(--border-soft);
+        font-size: 12px;
+      }
+      .data-row:last-child,
+      .data-row:nth-last-child(2) {
+        border-bottom: none;
+      }
+      .data-row .key {
+        color: var(--muted);
+        text-transform: lowercase;
+        letter-spacing: 0.3px;
+      }
+      .data-row .val {
+        font-weight: 600;
+        color: var(--text-bright);
+        font-variant-numeric: tabular-nums;
+      }
+      .data-row .val.warn {
+        color: var(--amber);
+      }
+      .data-row .val.pos {
+        color: var(--green);
+      }
+      .data-row .val.neg {
+        color: var(--red);
+      }
+
+      .levels-bar {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        font-size: 11px;
+      }
+      .levels-bar .lvl {
+        flex: 1;
+        padding: 6px 10px;
+        border-radius: 3px;
+        text-align: center;
+        background: var(--bg-2);
+      }
+      .levels-bar .lvl.r {
+        border-left: 2px solid var(--red);
+      }
+      .levels-bar .lvl.s {
+        border-left: 2px solid var(--green);
+      }
+      .levels-bar .lvl span {
+        display: block;
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 1px;
+        margin-bottom: 2px;
+      }
+      .levels-bar .lvl strong {
+        color: var(--text-bright);
+        font-weight: 600;
+      }
+
+      .smart-money {
+        margin-top: 16px;
+        padding: 12px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid var(--cyan);
+      }
+      .sm-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--cyan);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .sm-divergence {
+        font-size: 9px;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+        text-transform: none;
+        font-weight: 400;
+      }
+      .sm-divergence.div-strong {
+        color: var(--amber);
+        font-weight: 600;
+      }
+      .sm-divergence.div-mild {
+        color: var(--blue);
+      }
+      .sm-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .sm-side {
+        font-size: 10px;
+      }
+      .sm-label {
+        color: var(--muted);
+        text-transform: lowercase;
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+      }
+      .sm-bar {
+        display: flex;
+        height: 6px;
+        border-radius: 2px;
+        overflow: hidden;
+        background: var(--bg-3);
+      }
+      .sm-bar-long {
+        background: var(--green);
+        height: 100%;
+        transition: width 0.4s;
+      }
+      .sm-bar-short {
+        background: var(--red);
+        height: 100%;
+        transition: width 0.4s;
+      }
+      .sm-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+        font-variant-numeric: tabular-nums;
+      }
+      .sm-long {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .sm-short {
+        color: var(--red);
+        font-weight: 600;
+      }
+      .sm-ratio {
+        color: var(--text-bright);
+        font-weight: 600;
+      }
+
+      .advice-section {
+        position: relative;
+        margin: 28px;
+        padding: 26px 30px;
+        background: var(--bg-1);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--cyan);
+        z-index: 1;
+      }
+      .advice-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      .advice-head h2 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 13px;
+        letter-spacing: 2px;
+        color: var(--cyan);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      button.advice-btn {
+        background: var(--cyan);
+        color: var(--bg-0);
+        border: 0;
+        padding: 8px 18px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 2px;
+        transition: all 0.15s;
+      }
+      button.advice-btn:hover {
+        background: #67e8f9;
+        transform: translateY(-1px);
+      }
+      button.advice-btn:disabled {
+        opacity: 0.5;
+        cursor: wait;
+        transform: none;
+      }
+
+      .advice-content {
+        white-space: pre-wrap;
+        line-height: 1.75;
+        color: var(--text);
+        font-size: 13px;
+      }
+      .advice-content b {
+        color: var(--cyan);
+        font-weight: 700;
+      }
+
+      .advice-meta {
+        color: var(--muted);
+        font-size: 10px;
+        letter-spacing: 1px;
+        margin-top: 16px;
+        text-transform: uppercase;
+      }
+
+      .placeholder {
+        color: var(--muted);
+        font-style: italic;
+      }
+
+      @media (max-width: 700px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .price {
+          font-size: 24px;
+        }
+        .header {
+          padding: 12px 18px;
+        }
+        .advice-section {
+          margin: 18px;
+          padding: 20px;
+        }
+        .data-grid {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        DOCPATS<span class="accent">.</span>advisor<span class="subtitle"
+          >realtime</span
+        >
+      </h1>
+      <div class="status-bar">
+        <div class="status-pill" id="wsPill">
+          <span class="dot"></span>
+          <span id="wsStatus">connecting...</span>
+        </div>
+        <div class="status-pill" id="msgPill" style="color: var(--muted)">
+          <span id="msgCount">0 msg</span>
+        </div>
+        <span id="lastUpdate">—</span>
+      </div>
+    </div>
+
+    <div class="grid" id="cards"></div>
+
+    <section class="advice-section">
+      <div class="advice-head">
+        <h2>Claude · analysis</h2>
+        <button class="advice-btn" id="getAdvice">обновить совет</button>
+      </div>
+      <div class="advice-content placeholder" id="advice">
+        Нажми «обновить совет», чтобы получить анализ от Claude по текущему
+        снимку рынка.
+      </div>
+      <div class="advice-meta" id="adviceTime"></div>
+    </section>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const fmt = (n, d = 2) =>
+        n == null || isNaN(n) ? "—" : Number(n).toFixed(d);
+      const fmtPct = (n) =>
+        n == null || isNaN(n)
+          ? "—"
+          : (n >= 0 ? "+" : "") + Number(n).toFixed(2) + "%";
+      const fmtBig = (n) => {
+        if (n == null) return "—";
+        if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
+        if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+        return Number(n).toFixed(0);
+      };
+      const fmtAge = (ms) => {
+        if (ms == null) return "—";
+        const s = Math.floor(ms / 1000);
+        if (s < 60) return s + "s";
+        if (s < 3600) return Math.floor(s / 60) + "m";
+        return Math.floor(s / 3600) + "h";
+      };
+
+      // Запоминаем последнюю цену для подсветки flash при изменении
+      const lastPrices = {};
+
+      async function loadSnapshot() {
+        try {
+          const r = await fetch("/api/snapshot");
+          const data = await r.json();
+          render(data);
+          updateStatus(data);
+        } catch (e) {
+          $("wsPill").className = "status-pill error";
+          $("wsStatus").textContent = "connection error";
+        }
+      }
+
+      function updateStatus(data) {
+        const ws = data.ws || {};
+        const since = ws.sinceLastMs;
+        let cls = "status-pill";
+        let text = "live";
+
+        if (!ws.connected) {
+          cls = "status-pill error";
+          text = "disconnected";
+        } else if (since == null) {
+          cls = "status-pill warn";
+          text = "no data";
+        } else if (since > 30000) {
+          cls = "status-pill error";
+          text = "stale " + fmtAge(since);
+        } else if (since > 5000) {
+          cls = "status-pill warn";
+          text = "slow " + fmtAge(since);
+        } else {
+          text = "live · " + fmtAge(since);
+        }
+
+        $("wsPill").className = cls;
+        $("wsStatus").textContent = text;
+        $("msgCount").textContent =
+          (ws.messagesReceived || 0).toLocaleString() + " msg";
+        $("lastUpdate").textContent = new Date().toLocaleTimeString("ru-RU");
+      }
+
+      function render(data) {
+        const cards = $("cards");
+        const existing = new Map(
+          [...cards.children].map((el) => [el.dataset.symbol, el]),
+        );
+        const seen = new Set();
+
+        for (const s of data.snapshots) {
+          if (!s) continue;
+          seen.add(s.symbol);
+          const lev = (data.levels && data.levels[s.symbol]) || {};
+
+          const prev = lastPrices[s.symbol];
+          let flash = "";
+          if (prev != null && s.price != null && prev !== s.price) {
+            flash = s.price > prev ? "flash-up" : "flash-down";
+          }
+          lastPrices[s.symbol] = s.price;
+
+          let el = existing.get(s.symbol);
+          if (!el) {
+            el = document.createElement("div");
+            el.className = "card";
+            el.dataset.symbol = s.symbol;
+            cards.appendChild(el);
+          }
+          el.innerHTML = renderCard(s, lev, flash);
+        }
+
+        for (const [sym, el] of existing) {
+          if (!seen.has(sym)) el.remove();
+        }
+      }
+
+      function renderCard(s, lev, flash) {
+        const change = s.priceChangePct24h;
+        const decimals = s.symbol === "SOLUSDT" ? 2 : 1;
+
+        let nearestR = null,
+          nearestS = null;
+        if (lev.resistances && s.price) {
+          nearestR = lev.resistances
+            .filter((x) => x > s.price)
+            .sort((a, b) => a - b)[0];
+        }
+        if (lev.supports && s.price) {
+          nearestS = lev.supports
+            .filter((x) => x < s.price)
+            .sort((a, b) => b - a)[0];
+        }
+
+        const trendCls = (t) => t?.trend || "neutral";
+        const arrow = (t) => {
+          if (!t) return "·";
+          return t.trend === "bullish"
+            ? "↑"
+            : t.trend === "bearish"
+              ? "↓"
+              : t.trend === "mixed"
+                ? "↔"
+                : "·";
+        };
+
+        const tf1d = s.timeframes?.["1d"];
+        const fundingPct = s.funding != null ? s.funding * 100 : null;
+        const fundingClass =
+          fundingPct == null ? "" : Math.abs(fundingPct) > 0.05 ? "warn" : "";
+
+        // OI deltas: используем 5m из API, если есть; иначе из памяти
+        const oiD5m = s.oiDelta5mApi ?? s.oiDelta5m;
+        const oiClass5m =
+          oiD5m == null
+            ? ""
+            : Math.abs(oiD5m) > 1
+              ? "warn"
+              : oiD5m > 0
+                ? "pos"
+                : "neg";
+        const oiClass1h =
+          s.oiDelta1hApi == null
+            ? ""
+            : Math.abs(s.oiDelta1hApi) > 3
+              ? "warn"
+              : s.oiDelta1hApi > 0
+                ? "pos"
+                : "neg";
+
+        // Basis: премия фьюч vs спот
+        const basisClass =
+          s.basis == null
+            ? ""
+            : Math.abs(s.basis) > 0.1
+              ? "warn"
+              : s.basis > 0
+                ? "pos"
+                : "neg";
+
+        // Taker buy/sell ratio
+        const takerClass =
+          s.takerBuySellRatio == null
+            ? ""
+            : s.takerBuySellRatio > 1.1
+              ? "pos"
+              : s.takerBuySellRatio < 0.9
+                ? "neg"
+                : "";
+
+        // Smart Money дивергенция: толпа vs топы
+        let divergenceClass = "";
+        let divergenceText = "";
+        if (s.longShortRatio != null && s.topPositionLS != null) {
+          const crowdLong = s.longShortRatio > 1;
+          const topsLong = s.topPositionLS > 1;
+          if (crowdLong !== topsLong) {
+            divergenceClass = "div-strong";
+            divergenceText = topsLong
+              ? "↑ топы против толпы (бычий)"
+              : "↓ топы против толпы (медвежий)";
+          } else if (Math.abs(s.longShortRatio - s.topPositionLS) > 1) {
+            divergenceClass = "div-mild";
+            divergenceText = "расхождение в силе";
+          } else {
+            divergenceText = "единогласно";
+          }
+        }
+
+        const fmtPctNoPlus = (n) =>
+          n == null ? "—" : (n * 100).toFixed(0) + "%";
+
+        const tickAge = s.lastTickerAt ? Date.now() - s.lastTickerAt : null;
+        let tickClass = "";
+        let tickText = "—";
+        if (tickAge != null) {
+          tickText = "last tick " + fmtAge(tickAge) + " ago";
+          if (tickAge > 30000) tickClass = "dead";
+          else if (tickAge > 5000) tickClass = "warn";
+        } else {
+          tickText = "нет ws-тиков, цена из свечи";
+          tickClass = "warn";
+        }
+
+        return `
+      <div class="card-head">
+        <div class="symbol">${s.symbol}</div>
+        <div class="meta">vol24h ${fmtBig(s.volume24h)}</div>
+      </div>
+      <div class="price-row">
+        <div class="price ${flash}">${fmt(s.price, decimals)}</div>
+        <div class="change ${change >= 0 ? "pos" : "neg"}">${fmtPct(change)}</div>
+      </div>
+      <div class="tick-line ${tickClass}">${tickText}</div>
+      <div class="tf-row">
+        ${["15m", "1h", "4h", "1d"]
+          .map((tf) => {
+            const t = s.timeframes?.[tf];
+            return `<div class="tf ${trendCls(t)}">
+            <span class="label">${tf}</span>
+            <span class="arrow">${arrow(t)}</span>
+          </div>`;
+          })
+          .join("")}
+      </div>
+      <div class="data-grid">
+        <div class="data-row"><span class="key">funding 8h</span><span class="val ${fundingClass}">${fundingPct != null ? fundingPct.toFixed(4) + "%" : "—"}</span></div>
+        <div class="data-row"><span class="key">basis %</span><span class="val ${basisClass}">${fmt(s.basis, 4)}</span></div>
+        <div class="data-row"><span class="key">OI Δ 5m</span><span class="val ${oiClass5m}">${fmtPct(oiD5m)}</span></div>
+        <div class="data-row"><span class="key">OI Δ 1h</span><span class="val ${oiClass1h}">${fmtPct(s.oiDelta1hApi)}</span></div>
+        <div class="data-row"><span class="key">RSI 1d</span><span class="val">${fmt(tf1d?.rsi, 1)}</span></div>
+        <div class="data-row"><span class="key">taker B/S</span><span class="val ${takerClass}">${fmt(s.takerBuySellRatio, 2)}</span></div>
+      </div>
+
+      <div class="smart-money">
+        <div class="sm-title">smart money <span class="sm-divergence ${divergenceClass}">${divergenceText}</span></div>
+        <div class="sm-row">
+          <div class="sm-side">
+            <div class="sm-label">толпа (все аккаунты)</div>
+            <div class="sm-bar">
+              <div class="sm-bar-long" style="width: ${(s.longAccountPct || 0) * 100}%"></div>
+              <div class="sm-bar-short" style="width: ${(s.shortAccountPct || 0) * 100}%"></div>
+            </div>
+            <div class="sm-meta">
+              <span class="sm-long">L ${fmtPctNoPlus(s.longAccountPct)}</span>
+              <span class="sm-ratio">L/S ${fmt(s.longShortRatio, 2)}</span>
+              <span class="sm-short">S ${fmtPctNoPlus(s.shortAccountPct)}</span>
+            </div>
+          </div>
+          <div class="sm-side">
+            <div class="sm-label">топы (по позициям)</div>
+            <div class="sm-bar">
+              <div class="sm-bar-long" style="width: ${(s.topPositionLong || 0) * 100}%"></div>
+              <div class="sm-bar-short" style="width: ${(s.topPositionShort || 0) * 100}%"></div>
+            </div>
+            <div class="sm-meta">
+              <span class="sm-long">L ${fmtPctNoPlus(s.topPositionLong)}</span>
+              <span class="sm-ratio">L/S ${fmt(s.topPositionLS, 2)}</span>
+              <span class="sm-short">S ${fmtPctNoPlus(s.topPositionShort)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="levels-bar">
+        <div class="lvl r"><span>сопрот.</span><strong>${nearestR ?? "—"}</strong></div>
+        <div class="lvl s"><span>поддерж.</span><strong>${nearestS ?? "—"}</strong></div>
+      </div>
+    `;
+      }
+
+      $("getAdvice").addEventListener("click", async () => {
+        const btn = $("getAdvice");
+        const out = $("advice");
+        btn.disabled = true;
+        btn.textContent = "думаю...";
+        out.classList.remove("placeholder");
+        out.textContent = "...";
+        try {
+          const r = await fetch("/api/advice", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+          });
+          const data = await r.json();
+          if (data.advice) {
+            const escaped = data.advice
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+            const withBold = escaped
+              .replace(/&lt;b&gt;/gi, "<b>")
+              .replace(/&lt;\/b&gt;/gi, "</b>");
+            out.innerHTML = withBold;
+            $("adviceTime").textContent =
+              "обновлено · " + new Date(data.time).toLocaleString("ru-RU");
+          } else {
+            out.textContent = "ошибка: " + (data.error || "unknown");
+          }
+        } catch (e) {
+          out.textContent = "ошибка: " + e.message;
+        }
+        btn.disabled = false;
+        btn.textContent = "обновить совет";
+      });
+
+      loadSnapshot();
+      setInterval(loadSnapshot, 2000); // обновляем чаще — раз в 2 сек
+    </script>
+  </body>
+</html>
