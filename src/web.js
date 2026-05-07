@@ -6,6 +6,7 @@ import { state } from "./state.js";
 import { snapshot } from "./analysis.js";
 import { askClaude } from "./claude.js";
 import { wsHealth } from "./binance.js";
+import { getMLSnapshot } from "./ml.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,6 +20,7 @@ export function startWeb() {
     res.json({
       snapshots: out,
       levels: config.levels,
+      ml: getMLSnapshot(),
       ws: {
         connected: wsHealth.connected,
         lastMessageAt: wsHealth.lastMessageAt,

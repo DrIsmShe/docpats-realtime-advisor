@@ -3,6 +3,7 @@ import { config } from "./config.js";
 import { state } from "./state.js";
 import { snapshot } from "./analysis.js";
 import { askClaude } from "./claude.js";
+import { getMLSnapshot } from "./ml.js";
 
 let bot = null;
 const allowedChatIds = new Set();
@@ -204,6 +205,26 @@ function formatSymbolSnapshot(symbol, compact = false) {
     const t = snap.takerBuySellRatio;
     const tEmoji = t > 1.1 ? "🟢" : t < 0.9 ? "🔴" : "⚪";
     out += `<i>taker B/S:</i> ${tEmoji} ${t.toFixed(2)}\n`;
+  }
+
+  // ─── ML signal — только для BTC ───
+  if (symbol === "BTCUSDT") {
+    const ml = getMLSnapshot();
+    if (ml.available) {
+      const mlEmoji =
+        ml.signal === "BUY" ? "🟢" : ml.signal === "SELL" ? "🔴" : "⚪";
+      const ageS = Math.round(ml.ageMs / 1000);
+      out += `\n🤖 <b>ML signal</b> (LSTM, отдельно от Claude)\n`;
+      out += `${mlEmoji} <b>${ml.signal}</b> · confidence: ${(ml.confidence * 100).toFixed(1)}%\n`;
+      out += `<i>buy:</i> ${(ml.buy * 100).toFixed(1)}% · `;
+      out += `<i>hold:</i> ${(ml.hold * 100).toFixed(1)}% · `;
+      out += `<i>sell:</i> ${(ml.sell * 100).toFixed(1)}%\n`;
+      out += `<i>обновлено: ${ageS < 60 ? ageS + "s" : Math.floor(ageS / 60) + "m"} назад</i>\n`;
+    } else if (ml.lastError) {
+      out += `\n🤖 <i>ML: недоступен (${ml.lastError.slice(0, 60)})</i>\n`;
+    } else {
+      out += `\n🤖 <i>ML: ожидает данных...</i>\n`;
+    }
   }
 
   return out;

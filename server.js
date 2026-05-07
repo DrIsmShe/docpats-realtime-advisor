@@ -7,6 +7,7 @@ import {
 import { startTriggers } from "./src/triggers.js";
 import { startTelegram } from "./src/telegram.js";
 import { startWeb } from "./src/web.js";
+import { startML } from "./src/ml.js";
 
 async function main() {
   console.log("═══════════════════════════════════════════");
@@ -21,6 +22,7 @@ async function main() {
   console.log(
     `  claude     : ${config.anthropic.apiKey ? "enabled (" + config.anthropic.model + ")" : "disabled"}`,
   );
+  console.log(`  ml-service : http://localhost:3001 (BTC only)`);
   console.log(
     `  quiet utc  : ${config.quietHours.start}-${config.quietHours.end}`,
   );
@@ -32,6 +34,7 @@ async function main() {
   startTriggers();
   startTelegram();
   startWeb();
+  startML();
 
   console.log("[main] all systems running\n");
 }
