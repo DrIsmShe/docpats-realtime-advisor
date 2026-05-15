@@ -399,16 +399,30 @@ export async function askClaude({ extraContext = "" } = {}) {
 
   const data = formatSnapshotForLLM();
   const userPrompt =
-    `Текущий снимок рынка (JSON):\n\`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\`` +
+    `Текущий снимок рынка (JSON):\n\`\`\`json\n${JSON.stringify(data)}\n\`\`\`` +
     (extraContext ? `\n\nДополнительный контекст: ${extraContext}` : "") +
     `\n\nДай совет по этому снимку.`;
 
   const response = await client.messages.create({
     model: config.anthropic.model,
-    max_tokens: 2500,
+    max_tokens: 8192,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: userPrompt }],
   });
+
+  // Диагностика обрезанных ответов
+  if (response.stop_reason === "max_tokens") {
+    console.warn(
+      `⚠️ [Claude] Ответ обрезан по max_tokens. ` +
+        `Tokens: in=${response.usage.input_tokens} out=${response.usage.output_tokens}. ` +
+        `Подними max_tokens выше ${response.usage.output_tokens}.`,
+    );
+  } else {
+    console.log(
+      `[Claude] stop=${response.stop_reason} ` +
+        `in=${response.usage.input_tokens} out=${response.usage.output_tokens}`,
+    );
+  }
 
   return response.content
     .filter((b) => b.type === "text")
