@@ -53,7 +53,7 @@ async function fetchSolanaTVL() {
 // ─── 2. Stablecoin supply на Solana ───
 async function fetchSolanaStables() {
   // Возвращает массив [{ date, totalCirculatingUSD: { peggedUSD: X } }, ...]
-  const data = await getJson(`${STABLE}/stablecoinchart/Solana`);
+  const data = await getJson(`${STABLE}/stablecoincharts/Solana`);
   if (!Array.isArray(data) || data.length === 0) return null;
 
   const now = data[data.length - 1];
