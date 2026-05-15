@@ -1,4 +1,6 @@
 // ─── Технические индикаторы ───
+import { computeFundingTrend } from "./derivatives.js";
+import { state } from "./state.js";
 
 function ema(values, period) {
   if (values.length < period) return null;
@@ -55,7 +57,6 @@ export function computeTimeframe(klines) {
   const r = rsi(closes, 14);
   const m = macd(closes);
 
-  // Логика тренда по EMA cascading
   let trend = "neutral";
   if (ema20 && ema50) {
     if (last.close > ema20 && ema20 > ema50) trend = "bullish";
@@ -95,8 +96,7 @@ export function snapshot(symbolData) {
     }
   }
 
-  // Fallback: если ticker ещё не пришёл (первые секунды после старта),
-  // берём цену из последней закрытой 1m/15m свечи. И % изменения считаем сами по 1d kline.
+  // Fallback price
   const klines1d = symbolData.klines["1d"] || [];
   const klines15m = symbolData.klines["15m"] || [];
   const lastKline =
@@ -119,7 +119,7 @@ export function snapshot(symbolData) {
     }
   }
 
-  // ─── OI Δ из API (5m, 15m, 1h) — точная динамика с биржи ───
+  // OI Δ из API
   let oiDelta5mApi = null;
   let oiDelta15mApi = null;
   let oiDelta1hApi = null;
@@ -137,6 +137,18 @@ export function snapshot(symbolData) {
       oiDelta1hApi = ((latest.value - h1.value) / h1.value) * 100;
   }
 
+  // ─── Новые метрики ───
+  const cvd = symbolData.cvd; // { spot, perp, divergence, ts }
+  const orderBook = symbolData.orderBook; // { midPrice, spread, imb1pct, imb2pct, imb5pct, ts }
+  const coinbasePremium = symbolData.coinbasePremium;
+  const fundingTrend = computeFundingTrend(symbolData.symbol);
+
+  // On-chain Solana (только для SOL карточки)
+  let solanaOnchain = null;
+  if (symbolData.symbol === "SOLUSDT") {
+    solanaOnchain = state.getSolanaOnchain();
+  }
+
   return {
     symbol: symbolData.symbol,
     price: symbolData.ticker?.price ?? priceFallback,
@@ -147,26 +159,33 @@ export function snapshot(symbolData) {
     low24h: symbolData.ticker?.low24h ?? lowFallback,
     funding: symbolData.funding?.rate ?? null,
     nextFundingTime: symbolData.funding?.nextFundingTime ?? null,
-    basis: symbolData.basis ?? null, // % premium фьюч vs спот
+    basis: symbolData.basis ?? null,
     openInterest: symbolData.openInterest?.openInterest ?? null,
-    oiDelta5m, // из памяти (быстрый)
+    oiDelta5m,
     oiDelta5mApi,
     oiDelta15mApi,
-    oiDelta1hApi, // из API (точные)
-    // L/S общий (толпа)
+    oiDelta1hApi,
     longShortRatio: symbolData.longShortRatio?.longShortRatio ?? null,
     longAccountPct: symbolData.longShortRatio?.longAccount ?? null,
     shortAccountPct: symbolData.longShortRatio?.shortAccount ?? null,
-    // L/S топ-трейдеры (умные деньги)
     topAccountLS: symbolData.topAccountLS?.longShortRatio ?? null,
     topAccountLong: symbolData.topAccountLS?.longAccount ?? null,
     topAccountShort: symbolData.topAccountLS?.shortAccount ?? null,
     topPositionLS: symbolData.topPositionLS?.longShortRatio ?? null,
     topPositionLong: symbolData.topPositionLS?.longAccount ?? null,
     topPositionShort: symbolData.topPositionLS?.shortAccount ?? null,
-    // Taker buy/sell
     takerBuySellRatio: symbolData.takerBuySell?.buySellRatio ?? null,
     timeframes: tfResults,
+    // ─── Новые поля в snapshot ───
+    cvd, // полный объект для UI
+    orderBook, // полный объект для UI
+    coinbasePremium,
+    fundingTrend,
+    solanaOnchain, // только для SOL, иначе null
+    stopHunting: symbolData.stopHunting,
+    aggFunding: symbolData.aggFunding,
+    deribit: symbolData.deribit, // только для BTC/ETH
+    // ─── Конец новых полей ───
     updatedAt: symbolData.updatedAt,
     lastTickerAt: symbolData.lastTickerAt,
   };

@@ -28,6 +28,8 @@
         --amber: #fbbf24;
         --blue: #60a5fa;
         --cyan: #22d3ee;
+        --purple: #a78bfa;
+        --orange: #fb923c;
       }
       * {
         box-sizing: border-box;
@@ -537,6 +539,589 @@
         font-size: 11px;
       }
 
+      /* ─── CVD Block (Spot vs Perp flow) ─── */
+      .cvd-block {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid var(--orange);
+      }
+      .cvd-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .cvd-divergence {
+        font-size: 9px;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+        text-transform: none;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 2px;
+      }
+      .cvd-divergence.squeeze {
+        color: var(--green);
+        background: var(--green-dim);
+      }
+      .cvd-divergence.trap {
+        color: var(--red);
+        background: var(--red-dim);
+      }
+      .cvd-divergence.bull {
+        color: var(--green);
+      }
+      .cvd-divergence.bear {
+        color: var(--red);
+      }
+      .cvd-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .cvd-side {
+        font-size: 10px;
+      }
+      .cvd-label {
+        color: var(--muted);
+        text-transform: lowercase;
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+      }
+      .cvd-meta {
+        display: flex;
+        justify-content: space-between;
+        font-variant-numeric: tabular-nums;
+        margin-top: 3px;
+      }
+      .cvd-ratio {
+        color: var(--text-bright);
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .cvd-ratio.pos {
+        color: var(--green);
+      }
+      .cvd-ratio.neg {
+        color: var(--red);
+      }
+      .cvd-net {
+        color: var(--muted);
+        font-size: 9px;
+      }
+
+      /* ─── Order Book Block ─── */
+      .ob-block {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid var(--blue);
+      }
+      .ob-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--blue);
+        margin-bottom: 10px;
+      }
+      .ob-imb-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .ob-imb {
+        text-align: center;
+        font-size: 10px;
+      }
+      .ob-imb .lbl {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 1px;
+        margin-bottom: 2px;
+      }
+      .ob-imb .val {
+        font-weight: 700;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+      }
+      .ob-imb .val.pos {
+        color: var(--green);
+      }
+      .ob-imb .val.neg {
+        color: var(--red);
+      }
+      .ob-walls {
+        display: flex;
+        gap: 8px;
+        font-size: 10px;
+        font-variant-numeric: tabular-nums;
+      }
+      .ob-wall {
+        flex: 1;
+        padding: 4px 6px;
+        border-radius: 2px;
+        background: var(--bg-3);
+      }
+      .ob-wall .lbl {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 0.5px;
+        display: block;
+      }
+      .ob-wall.bid {
+        border-left: 2px solid var(--green);
+      }
+      .ob-wall.ask {
+        border-left: 2px solid var(--red);
+      }
+
+      /* ─── Coinbase Premium Block ─── */
+      .cb-block {
+        margin-top: 12px;
+        padding: 10px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid var(--purple);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .cb-left .cb-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--purple);
+      }
+      .cb-left .cb-sub {
+        font-size: 9px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .cb-right {
+        text-align: right;
+      }
+      .cb-premium {
+        font-size: 16px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .cb-premium.pos {
+        color: var(--green);
+      }
+      .cb-premium.neg {
+        color: var(--red);
+      }
+      .cb-interp {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 2px;
+        color: var(--muted);
+      }
+
+      /* ─── Funding Trend Block ─── */
+      .ft-block {
+        margin-top: 12px;
+        padding: 10px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid var(--amber);
+      }
+      .ft-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .ft-trend {
+        font-size: 9px;
+        font-weight: 600;
+        text-transform: none;
+        padding: 2px 6px;
+        border-radius: 2px;
+        background: var(--bg-3);
+      }
+      .ft-trend.heating_long {
+        color: var(--red);
+        background: var(--red-dim);
+      }
+      .ft-trend.heating_short {
+        color: var(--green);
+        background: var(--green-dim);
+      }
+      .ft-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        font-size: 10px;
+      }
+      .ft-cell {
+        text-align: center;
+      }
+      .ft-cell .lbl {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 0.5px;
+      }
+      .ft-cell .val {
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        font-size: 11px;
+      }
+      .ft-cell .val.pos {
+        color: var(--green);
+      }
+      .ft-cell .val.neg {
+        color: var(--red);
+      }
+
+      /* ─── On-chain Solana Block ─── */
+      .onchain-block {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid #14f195; /* Solana brand green */
+      }
+      .onchain-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #14f195;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .onchain-interp {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: none;
+        padding: 2px 6px;
+        border-radius: 2px;
+        letter-spacing: 0.5px;
+      }
+      .onchain-interp.fundamental_bullish {
+        color: var(--green);
+        background: var(--green-dim);
+      }
+      .onchain-interp.fundamental_bearish {
+        color: var(--red);
+        background: var(--red-dim);
+      }
+      .onchain-interp.mixed {
+        color: var(--amber);
+        background: rgba(251, 191, 36, 0.15);
+      }
+      .onchain-interp.neutral {
+        color: var(--muted);
+      }
+      .onchain-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .onchain-cell {
+        text-align: center;
+        font-size: 10px;
+      }
+      .onchain-cell .lbl {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+      }
+      .onchain-cell .val {
+        font-weight: 700;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-bright);
+      }
+      .onchain-cell .delta {
+        font-size: 9px;
+        font-weight: 600;
+        margin-top: 1px;
+        font-variant-numeric: tabular-nums;
+      }
+      .onchain-cell .delta.pos {
+        color: var(--green);
+      }
+      .onchain-cell .delta.neg {
+        color: var(--red);
+      }
+      .onchain-protos {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px dashed var(--border-soft);
+        font-size: 9px;
+      }
+      .onchain-protos-title {
+        color: var(--muted);
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .onchain-proto-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 2px 0;
+        font-variant-numeric: tabular-nums;
+      }
+      .onchain-proto-name {
+        color: var(--text);
+      }
+      .onchain-proto-change.pos {
+        color: var(--green);
+      }
+      .onchain-proto-change.neg {
+        color: var(--red);
+      }
+
+      /* ─── Stop Hunting / Magnets Block ─── */
+      .magnets-block {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid #f43f5e;
+      }
+      .magnets-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #f43f5e;
+        margin-bottom: 10px;
+      }
+      .magnets-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .magnets-side .lbl {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .magnets-item {
+        padding: 4px 6px;
+        background: var(--bg-3);
+        border-radius: 2px;
+        margin-bottom: 3px;
+        font-size: 10px;
+        font-variant-numeric: tabular-nums;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .magnets-item.above {
+        border-left: 2px solid var(--red);
+      }
+      .magnets-item.below {
+        border-left: 2px solid var(--green);
+      }
+      .magnets-item .price {
+        font-weight: 700;
+        color: var(--text-bright);
+      }
+      .magnets-item .dist {
+        color: var(--muted);
+        font-size: 9px;
+      }
+      .magnets-item.strong {
+        background: rgba(244, 63, 94, 0.15);
+      }
+      .magnets-conf {
+        display: inline-block;
+        background: var(--amber);
+        color: var(--bg-0);
+        font-weight: 700;
+        font-size: 9px;
+        padding: 1px 4px;
+        border-radius: 2px;
+        margin-left: 4px;
+      }
+      .magnets-strongest {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px dashed var(--border-soft);
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .magnets-strongest strong {
+        color: #f43f5e;
+        font-weight: 700;
+      }
+
+      /* ─── Aggregate Funding Block ─── */
+      .aggfund-block {
+        margin-top: 12px;
+        padding: 10px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid #fbbf24;
+      }
+      .aggfund-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #fbbf24;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .aggfund-extreme {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 2px;
+        text-transform: none;
+        letter-spacing: 0.5px;
+      }
+      .aggfund-extreme.all_long_extreme {
+        color: var(--red);
+        background: var(--red-dim);
+      }
+      .aggfund-extreme.all_short_extreme {
+        color: var(--green);
+        background: var(--green-dim);
+      }
+      .aggfund-extreme.divergent {
+        color: var(--amber);
+      }
+      .aggfund-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        font-size: 10px;
+      }
+      .aggfund-cell {
+        text-align: center;
+      }
+      .aggfund-cell .ex {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 0.5px;
+      }
+      .aggfund-cell .rate {
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        font-size: 11px;
+      }
+      .aggfund-cell .rate.pos {
+        color: var(--green);
+      }
+      .aggfund-cell .rate.neg {
+        color: var(--red);
+      }
+      .aggfund-cell.avg {
+        background: var(--bg-3);
+        border-radius: 2px;
+        padding: 4px 2px;
+      }
+      .aggfund-cell.avg .ex {
+        color: #fbbf24;
+        font-weight: 700;
+      }
+      .aggfund-divergence {
+        margin-top: 6px;
+        font-size: 9px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .aggfund-divergence strong {
+        color: var(--amber);
+      }
+
+      /* ─── Deribit Options Block ─── */
+      .deribit-block {
+        margin-top: 12px;
+        padding: 12px 14px;
+        background: var(--bg-2);
+        border-radius: 3px;
+        border-left: 2px solid #8b5cf6;
+      }
+      .deribit-title {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #8b5cf6;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .deribit-expiry {
+        font-size: 9px;
+        color: var(--muted);
+        text-transform: none;
+        letter-spacing: 0.5px;
+      }
+      .deribit-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .deribit-cell {
+        text-align: center;
+        font-size: 10px;
+      }
+      .deribit-cell .lbl {
+        color: var(--muted);
+        font-size: 9px;
+        letter-spacing: 0.5px;
+      }
+      .deribit-cell .val {
+        font-weight: 700;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+      .deribit-cell .interp {
+        font-size: 9px;
+        color: var(--muted);
+        margin-top: 1px;
+      }
+      .deribit-cell .interp.heavy_puts {
+        color: var(--green);
+      }
+      .deribit-cell .interp.heavy_calls {
+        color: var(--red);
+      }
+      .deribit-cell .interp.pulls_up {
+        color: var(--green);
+      }
+      .deribit-cell .interp.pulls_down {
+        color: var(--red);
+      }
+      .deribit-strikes {
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px dashed var(--border-soft);
+        font-size: 9px;
+        color: var(--muted);
+      }
+      .deribit-strike-row {
+        display: flex;
+        justify-content: space-between;
+        font-variant-numeric: tabular-nums;
+        padding: 1px 0;
+      }
+      .deribit-strike-price {
+        color: var(--text);
+        font-weight: 600;
+      }
+
       .advice-section {
         position: relative;
         margin: 28px;
@@ -935,6 +1520,15 @@
 
       ${s.symbol === "BTCUSDT" ? renderMLBlock() : ""}
 
+      ${renderCVDBlock(s)}
+      ${renderOrderBookBlock(s, decimals)}
+      ${renderMagnetsBlock(s, decimals)}
+      ${renderCoinbasePremiumBlock(s)}
+      ${renderFundingTrendBlock(s)}
+      ${renderAggFundingBlock(s)}
+      ${renderDeribitBlock(s)}
+      ${renderSolanaOnchainBlock(s)}
+
       <div class="levels-bar">
         <div class="lvl r"><span>сопрот.</span><strong>${nearestR ?? "—"}</strong></div>
         <div class="lvl s"><span>поддерж.</span><strong>${nearestS ?? "—"}</strong></div>
@@ -944,6 +1538,468 @@
 
       // глобальное состояние ML
       let mlData = null;
+
+      // ─── CVD Block (Spot vs Perp flow) ───
+      function renderCVDBlock(s) {
+        const c = s.cvd;
+        if (!c || !c.spot || !c.perp) {
+          return `<div class="cvd-block"><div class="cvd-title">📈 CVD · spot vs perp</div><div class="ml-na">загрузка...</div></div>`;
+        }
+        const sRatio = c.spot.ratio;
+        const pRatio = c.perp.ratio;
+        const sCls =
+          sRatio == null
+            ? ""
+            : sRatio > 1.1
+              ? "pos"
+              : sRatio < 0.9
+                ? "neg"
+                : "";
+        const pCls =
+          pRatio == null
+            ? ""
+            : pRatio > 1.1
+              ? "pos"
+              : pRatio < 0.9
+                ? "neg"
+                : "";
+
+        const divMap = {
+          squeeze_setup: { cls: "squeeze", text: "↑ SQUEEZE SETUP" },
+          trap_setup: { cls: "trap", text: "↓ LONG TRAP" },
+          aligned_bull: { cls: "bull", text: "↑ aligned bull" },
+          aligned_bear: { cls: "bear", text: "↓ aligned bear" },
+          neutral: { cls: "", text: "neutral" },
+        };
+        const dv = divMap[c.divergence] || divMap.neutral;
+
+        const fmtVol = (n) => {
+          if (n == null) return "—";
+          const abs = Math.abs(n);
+          const sign = n >= 0 ? "+" : "-";
+          if (abs >= 1e6) return sign + (abs / 1e6).toFixed(2) + "M";
+          if (abs >= 1e3) return sign + (abs / 1e3).toFixed(1) + "K";
+          return sign + abs.toFixed(0);
+        };
+
+        return `
+      <div class="cvd-block">
+        <div class="cvd-title">
+          <span>📈 CVD · spot vs perp (1k trades)</span>
+          <span class="cvd-divergence ${dv.cls}">${dv.text}</span>
+        </div>
+        <div class="cvd-row">
+          <div class="cvd-side">
+            <div class="cvd-label">spot (real money)</div>
+            <div class="cvd-meta">
+              <span>B/S</span>
+              <span class="cvd-ratio ${sCls}">${fmt(sRatio, 2)}</span>
+            </div>
+            <div class="cvd-meta">
+              <span class="cvd-net">net: ${fmtVol(c.spot.cvd)}</span>
+            </div>
+          </div>
+          <div class="cvd-side">
+            <div class="cvd-label">perp (leveraged)</div>
+            <div class="cvd-meta">
+              <span>B/S</span>
+              <span class="cvd-ratio ${pCls}">${fmt(pRatio, 2)}</span>
+            </div>
+            <div class="cvd-meta">
+              <span class="cvd-net">net: ${fmtVol(c.perp.cvd)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+      }
+
+      // ─── Order Book Block ───
+      function renderOrderBookBlock(s, decimals) {
+        const ob = s.orderBook;
+        if (!ob || !ob.imb1pct) {
+          return `<div class="ob-block"><div class="ob-title">📚 Order Book Imbalance</div><div class="ml-na">загрузка...</div></div>`;
+        }
+
+        const imbClass = (v) =>
+          v == null ? "" : v > 0.1 ? "pos" : v < -0.1 ? "neg" : "";
+        const fmtImb = (v) =>
+          v == null ? "—" : (v >= 0 ? "+" : "") + (v * 100).toFixed(0) + "%";
+
+        const bidWall = ob.imb2pct?.largestBidWall;
+        const askWall = ob.imb2pct?.largestAskWall;
+        const fmtWallSize = (n) => {
+          if (!n) return "—";
+          if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+          if (n >= 1e3) return (n / 1e3).toFixed(0) + "K";
+          return n.toFixed(0);
+        };
+
+        return `
+      <div class="ob-block">
+        <div class="ob-title">📚 Order Book Imbalance · spread ${fmt(ob.spread, 3)}%</div>
+        <div class="ob-imb-row">
+          <div class="ob-imb">
+            <div class="lbl">±1%</div>
+            <div class="val ${imbClass(ob.imb1pct.imbalance)}">${fmtImb(ob.imb1pct.imbalance)}</div>
+          </div>
+          <div class="ob-imb">
+            <div class="lbl">±2%</div>
+            <div class="val ${imbClass(ob.imb2pct.imbalance)}">${fmtImb(ob.imb2pct.imbalance)}</div>
+          </div>
+          <div class="ob-imb">
+            <div class="lbl">±5%</div>
+            <div class="val ${imbClass(ob.imb5pct.imbalance)}">${fmtImb(ob.imb5pct.imbalance)}</div>
+          </div>
+        </div>
+        <div class="ob-walls">
+          <div class="ob-wall bid">
+            <span class="lbl">bid wall</span>
+            ${bidWall?.price ? fmt(bidWall.price, decimals) + " · $" + fmtWallSize(bidWall.qty) : "—"}
+          </div>
+          <div class="ob-wall ask">
+            <span class="lbl">ask wall</span>
+            ${askWall?.price ? fmt(askWall.price, decimals) + " · $" + fmtWallSize(askWall.qty) : "—"}
+          </div>
+        </div>
+      </div>
+    `;
+      }
+
+      // ─── Coinbase Premium Block ───
+      function renderCoinbasePremiumBlock(s) {
+        const cb = s.coinbasePremium;
+        if (!cb) {
+          return `<div class="cb-block"><div class="cb-left"><div class="cb-title">🇺🇸 Coinbase Premium</div></div><div class="cb-right"><span class="ml-na">загрузка...</span></div></div>`;
+        }
+        const interpMap = {
+          us_buying_strong: "US BUYING (strong)",
+          us_buying_mild: "us buying (mild)",
+          us_selling_strong: "US SELLING (strong)",
+          us_selling_mild: "us selling (mild)",
+          neutral: "neutral",
+        };
+        const cls = cb.premiumPct > 0 ? "pos" : cb.premiumPct < 0 ? "neg" : "";
+        const sign = cb.premiumPct >= 0 ? "+" : "";
+
+        return `
+      <div class="cb-block">
+        <div class="cb-left">
+          <div class="cb-title">🇺🇸 Coinbase Premium</div>
+          <div class="cb-sub">CB $${fmt(cb.coinbasePrice, 2)} vs BN $${fmt(cb.binancePrice, 2)}</div>
+        </div>
+        <div class="cb-right">
+          <div class="cb-premium ${cls}">${sign}${fmt(cb.premiumPct, 3)}%</div>
+          <div class="cb-interp">${interpMap[cb.interpretation] || cb.interpretation}</div>
+        </div>
+      </div>
+    `;
+      }
+
+      // ─── Funding Trend Block ───
+      function renderFundingTrendBlock(s) {
+        const ft = s.fundingTrend;
+        if (!ft || ft.samples === 0) {
+          return `<div class="ft-block"><div class="ft-title">💰 Funding Trend</div><div class="ml-na">накапливаю историю...</div></div>`;
+        }
+        const fmtRate = (r) => (r == null ? "—" : (r * 100).toFixed(4) + "%");
+        const cls = (r) =>
+          r == null ? "" : r > 0 ? "pos" : r < 0 ? "neg" : "";
+
+        const trendMap = {
+          heating_long: "🔥 heating long",
+          heating_short: "❄️ heating short",
+          cooling: "cooling",
+          neutral: "neutral",
+        };
+
+        return `
+      <div class="ft-block">
+        <div class="ft-title">
+          <span>💰 Funding Trend</span>
+          <span class="ft-trend ${ft.trend}">${trendMap[ft.trend] || ft.trend}</span>
+        </div>
+        <div class="ft-row">
+          <div class="ft-cell">
+            <div class="lbl">now</div>
+            <div class="val ${cls(ft.current)}">${fmtRate(ft.current)}</div>
+          </div>
+          <div class="ft-cell">
+            <div class="lbl">avg 24h</div>
+            <div class="val ${cls(ft.avg24h)}">${fmtRate(ft.avg24h)}</div>
+          </div>
+          <div class="ft-cell">
+            <div class="lbl">avg 7d</div>
+            <div class="val ${cls(ft.avg7d)}">${fmtRate(ft.avg7d)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+      }
+
+      // ─── Stop Hunting / Magnets ───
+      function renderMagnetsBlock(s, decimals) {
+        const sh = s.stopHunting;
+        if (!sh) {
+          return `<div class="magnets-block"><div class="magnets-title">🎯 Liquidation Magnets</div><div class="ml-na">расчёт уровней...</div></div>`;
+        }
+
+        const renderItem = (m, dir) => {
+          if (!m) return "";
+          const conf =
+            m.confluence > 1
+              ? `<span class="magnets-conf">×${m.confluence}</span>`
+              : "";
+          const strong = m.strength === "high" ? " strong" : "";
+          return `
+            <div class="magnets-item ${dir}${strong}">
+              <span class="price">${fmt(m.price, decimals)}${conf}</span>
+              <span class="dist">${fmt(m.distance_pct, 2)}%</span>
+            </div>`;
+        };
+
+        const above = (sh.magnets_above || []).slice(0, 3);
+        const below = (sh.magnets_below || []).slice(0, 3);
+
+        let strongestHtml = "";
+        if (sh.strongest_magnet) {
+          const m = sh.strongest_magnet;
+          const dir = m.price > sh.price ? "↑" : "↓";
+          strongestHtml = `
+            <div class="magnets-strongest">
+              сильнейший: ${dir} <strong>${fmt(m.price, decimals)}</strong>
+              (${fmt(m.distance_pct, 2)}%, ${m.types ? m.types.length : 1} типов уровня)
+            </div>`;
+        }
+
+        return `
+      <div class="magnets-block">
+        <div class="magnets-title">🎯 Liquidation Magnets</div>
+        <div class="magnets-row">
+          <div class="magnets-side">
+            <div class="lbl">↑ выше цены</div>
+            ${above.map((m) => renderItem(m, "above")).join("") || '<div class="ml-na">нет</div>'}
+          </div>
+          <div class="magnets-side">
+            <div class="lbl">↓ ниже цены</div>
+            ${below.map((m) => renderItem(m, "below")).join("") || '<div class="ml-na">нет</div>'}
+          </div>
+        </div>
+        ${strongestHtml}
+      </div>
+    `;
+      }
+
+      // ─── Aggregate Funding ───
+      function renderAggFundingBlock(s) {
+        const af = s.aggFunding;
+        if (!af) {
+          return `<div class="aggfund-block"><div class="aggfund-title">💱 Aggregate Funding</div><div class="ml-na">загрузка...</div></div>`;
+        }
+
+        const fmtRate = (r) => (r == null ? "—" : (r * 100).toFixed(4) + "%");
+        const rateCls = (r) =>
+          r == null ? "" : r > 0 ? "pos" : r < 0 ? "neg" : "";
+
+        const extremeMap = {
+          all_long_extreme: "⚠️ ALL LONG EXTREME",
+          all_short_extreme: "⚠️ ALL SHORT EXTREME",
+        };
+        const extremeText = af.alignedExtreme
+          ? extremeMap[af.alignedExtreme]
+          : "";
+        const extremeCls = af.alignedExtreme || "";
+
+        const divergenceText =
+          af.divergence && af.divergence !== "aligned"
+            ? af.divergence.replace(/_/g, " ")
+            : "aligned";
+
+        return `
+      <div class="aggfund-block">
+        <div class="aggfund-title">
+          <span>💱 Aggregate Funding · 3 exchanges</span>
+          ${extremeText ? `<span class="aggfund-extreme ${extremeCls}">${extremeText}</span>` : ""}
+        </div>
+        <div class="aggfund-row">
+          <div class="aggfund-cell">
+            <div class="ex">BINANCE</div>
+            <div class="rate ${rateCls(af.binance)}">${fmtRate(af.binance)}</div>
+          </div>
+          <div class="aggfund-cell">
+            <div class="ex">BYBIT</div>
+            <div class="rate ${rateCls(af.bybit)}">${fmtRate(af.bybit)}</div>
+          </div>
+          <div class="aggfund-cell">
+            <div class="ex">OKX</div>
+            <div class="rate ${rateCls(af.okx)}">${fmtRate(af.okx)}</div>
+          </div>
+          <div class="aggfund-cell avg">
+            <div class="ex">AVG</div>
+            <div class="rate ${rateCls(af.avg)}">${fmtRate(af.avg)}</div>
+          </div>
+        </div>
+        <div class="aggfund-divergence">
+          ${af.divergence !== "aligned" ? `divergence: <strong>${divergenceText}</strong>` : "all aligned"}
+        </div>
+      </div>
+    `;
+      }
+
+      // ─── Deribit Options (только BTC/ETH) ───
+      function renderDeribitBlock(s) {
+        if (s.symbol !== "BTCUSDT" && s.symbol !== "ETHUSDT") return "";
+        const d = s.deribit;
+        if (!d) {
+          return `<div class="deribit-block"><div class="deribit-title">📐 Deribit Options</div><div class="ml-na">загрузка...</div></div>`;
+        }
+        if (!d.available) {
+          return `<div class="deribit-block"><div class="deribit-title">📐 Deribit Options</div><div class="ml-na">нет данных</div></div>`;
+        }
+
+        const pcrInterpMap = {
+          heavy_puts: "heavy puts (bullish)",
+          more_puts: "more puts",
+          heavy_calls: "heavy calls (bearish)",
+          more_calls: "more calls",
+          neutral: "neutral",
+        };
+
+        const maxPainBiasMap = {
+          pulls_up: "↑ pulls up",
+          pulls_down: "↓ pulls down",
+          neutral: "neutral",
+        };
+
+        const decimals = s.symbol === "BTCUSDT" ? 0 : 1;
+
+        let strikesHtml = "";
+        if (Array.isArray(d.topStrikes) && d.topStrikes.length > 0) {
+          strikesHtml = `
+        <div class="deribit-strikes">
+          <div style="margin-bottom: 3px;">top strikes by OI:</div>
+          ${d.topStrikes
+            .slice(0, 3)
+            .map(
+              (st) => `
+            <div class="deribit-strike-row">
+              <span class="deribit-strike-price">${fmt(st.strike, decimals)}</span>
+              <span>C ${fmt(st.callOi, 0)} · P ${fmt(st.putOi, 0)}</span>
+            </div>`,
+            )
+            .join("")}
+        </div>`;
+        }
+
+        return `
+      <div class="deribit-block">
+        <div class="deribit-title">
+          <span>📐 Deribit Options</span>
+          <span class="deribit-expiry">${d.nearestExpiry} · ${fmt(d.daysToExpiry, 1)}d</span>
+        </div>
+        <div class="deribit-row">
+          <div class="deribit-cell">
+            <div class="lbl">PCR near</div>
+            <div class="val">${fmt(d.putCallRatio, 2)}</div>
+            <div class="interp ${d.pcrInterpretation}">${pcrInterpMap[d.pcrInterpretation] || d.pcrInterpretation}</div>
+          </div>
+          <div class="deribit-cell">
+            <div class="lbl">Max Pain</div>
+            <div class="val">${fmt(d.maxPainStrike, decimals)}</div>
+            <div class="interp ${d.maxPainBias}">${maxPainBiasMap[d.maxPainBias] || d.maxPainBias} (${fmt(d.maxPainDistancePct, 1)}%)</div>
+          </div>
+          <div class="deribit-cell">
+            <div class="lbl">PCR agg</div>
+            <div class="val">${fmt(d.putCallRatioAgg, 2)}</div>
+            <div class="interp">all expiries</div>
+          </div>
+        </div>
+        ${strikesHtml}
+      </div>
+    `;
+      }
+
+      // ─── On-chain Solana Block (только для SOL) ───
+      function renderSolanaOnchainBlock(s) {
+        if (s.symbol !== "SOLUSDT") return "";
+        const oc = s.solanaOnchain;
+        if (!oc) {
+          return `<div class="onchain-block"><div class="onchain-title">🌐 Solana on-chain</div><div class="ml-na">загрузка...</div></div>`;
+        }
+
+        const interpMap = {
+          fundamental_bullish: "↑ FUNDAMENTAL BULL",
+          fundamental_bearish: "↓ FUNDAMENTAL BEAR",
+          mixed: "MIXED",
+          neutral: "neutral",
+        };
+
+        const fmtBigUsd = (n) => {
+          if (n == null) return "—";
+          const abs = Math.abs(n);
+          if (abs >= 1e9) return "$" + (n / 1e9).toFixed(2) + "B";
+          if (abs >= 1e6) return "$" + (n / 1e6).toFixed(1) + "M";
+          if (abs >= 1e3) return "$" + (n / 1e3).toFixed(0) + "K";
+          return "$" + n.toFixed(0);
+        };
+        const fmtDelta = (n) =>
+          n == null ? "" : (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
+        const deltaCls = (n) =>
+          n == null ? "" : n > 0 ? "pos" : n < 0 ? "neg" : "";
+
+        const tvl = oc.tvl?.tvl;
+        const tvlChg = oc.tvl?.change24h;
+        const stables = oc.stables?.supply;
+        const stablesNet = oc.stables?.netInflow24h;
+        const stablesChg = oc.stables?.change24h;
+        const dexVol = oc.dexVolume?.volume24h;
+        const dexChg = oc.dexVolume?.change24h;
+
+        let protosHtml = "";
+        if (Array.isArray(oc.topProtocols) && oc.topProtocols.length > 0) {
+          const rows = oc.topProtocols
+            .map(
+              (p) => `
+            <div class="onchain-proto-row">
+              <span class="onchain-proto-name">${p.name}</span>
+              <span>${fmtBigUsd(p.tvl)} <span class="onchain-proto-change ${deltaCls(p.change1d)}">${fmtDelta(p.change1d)}</span></span>
+            </div>`,
+            )
+            .join("");
+          protosHtml = `
+        <div class="onchain-protos">
+          <div class="onchain-protos-title">top protocols · 24h</div>
+          ${rows}
+        </div>`;
+        }
+
+        return `
+      <div class="onchain-block">
+        <div class="onchain-title">
+          <span>🌐 Solana on-chain · DefiLlama</span>
+          <span class="onchain-interp ${oc.interpretation}">${interpMap[oc.interpretation] || oc.interpretation}</span>
+        </div>
+        <div class="onchain-row">
+          <div class="onchain-cell">
+            <div class="lbl">TVL chain</div>
+            <div class="val">${fmtBigUsd(tvl)}</div>
+            <div class="delta ${deltaCls(tvlChg)}">${fmtDelta(tvlChg)}</div>
+          </div>
+          <div class="onchain-cell">
+            <div class="lbl">stablecoins</div>
+            <div class="val">${fmtBigUsd(stables)}</div>
+            <div class="delta ${deltaCls(stablesChg)}">${fmtDelta(stablesChg)}${stablesNet != null ? " · net " + fmtBigUsd(stablesNet) : ""}</div>
+          </div>
+          <div class="onchain-cell">
+            <div class="lbl">DEX vol 24h</div>
+            <div class="val">${fmtBigUsd(dexVol)}</div>
+            <div class="delta ${deltaCls(dexChg)}">${fmtDelta(dexChg)}</div>
+          </div>
+        </div>
+        ${protosHtml}
+      </div>
+    `;
+      }
 
       function renderMLBlock() {
         if (!mlData) {

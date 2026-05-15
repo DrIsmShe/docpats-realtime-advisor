@@ -20,6 +20,14 @@ class State extends EventEmitter {
         topPositionLS: null, // L/S positions топ-трейдеров
         takerBuySell: null, // taker buy/sell volume ratio
         basis: null, // premium = (markPrice - indexPrice) / indexPrice
+        // ─── Новые поля ───
+        cvd: null, // { spot, perp, divergence, ts }
+        orderBook: null, // { midPrice, spread, imb1pct, imb2pct, imb5pct, ts }
+        coinbasePremium: null, // { premiumPct, interpretation, ts }
+        stopHunting: null, // { magnets_above, magnets_below, nearest_above, nearest_below, ts }
+        aggFunding: null, // { binance, bybit, okx, avg, spread, divergence, alignedExtreme, ts }
+        deribit: null, // { putCallRatio, maxPainStrike, ... } — только для BTC/ETH
+        // ─── Конец новых полей ───
         updatedAt: null,
         lastTickerAt: null,
       };
@@ -28,6 +36,7 @@ class State extends EventEmitter {
       }
     }
     this.alertHistory = []; // для cooldown
+    this.solanaOnchain = null; // глобальный объект on-chain метрик Solana
   }
 
   updateTicker(symbol, ticker) {
@@ -61,7 +70,6 @@ class State extends EventEmitter {
   updateFunding(symbol, funding) {
     if (!this.data[symbol]) return;
     this.data[symbol].funding = funding;
-    // Также вычисляем basis из markPrice / indexPrice
     if (funding.markPrice && funding.indexPrice) {
       this.data[symbol].basis =
         ((funding.markPrice - funding.indexPrice) / funding.indexPrice) * 100;
@@ -114,6 +122,50 @@ class State extends EventEmitter {
     this.data[symbol].takerBuySell = ratio;
   }
 
+  // ─── Новые методы ───
+  updateCVD(symbol, cvd) {
+    if (!this.data[symbol]) return;
+    this.data[symbol].cvd = cvd;
+    this.emit("cvd", { symbol, cvd });
+  }
+
+  updateOrderBook(symbol, ob) {
+    if (!this.data[symbol]) return;
+    this.data[symbol].orderBook = ob;
+    this.emit("orderBook", { symbol, ob });
+  }
+
+  updateCoinbasePremium(symbol, premium) {
+    if (!this.data[symbol]) return;
+    this.data[symbol].coinbasePremium = premium;
+    this.emit("coinbasePremium", { symbol, premium });
+  }
+
+  updateSolanaOnchain(data) {
+    this.solanaOnchain = data;
+    this.emit("solanaOnchain", { data });
+  }
+
+  getSolanaOnchain() {
+    return this.solanaOnchain;
+  }
+
+  updateStopHunting(symbol, data) {
+    if (!this.data[symbol]) return;
+    this.data[symbol].stopHunting = data;
+  }
+
+  updateAggFunding(symbol, data) {
+    if (!this.data[symbol]) return;
+    this.data[symbol].aggFunding = data;
+  }
+
+  updateDeribit(symbol, data) {
+    if (!this.data[symbol]) return;
+    this.data[symbol].deribit = data;
+  }
+  // ─── Конец новых методов ───
+
   getSymbol(symbol) {
     return this.data[symbol];
   }
@@ -122,7 +174,6 @@ class State extends EventEmitter {
     return this.data;
   }
 
-  // дедупликация алертов с cooldown
   shouldAlert(key) {
     const now = Date.now();
     const recent = this.alertHistory.find(
